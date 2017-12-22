@@ -59,7 +59,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
      * Update rate in milliseconds for interactive mode. Defaults to one second
      * because the watch face needs to update seconds in interactive mode.
      */
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.MILLISECONDS.toMillis(1000);
 
     /**
      * Handler message id for updating the time periodically in interactive mode.
@@ -258,14 +258,15 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
 
-            // Load resources that have alternate values for round watches.
             Resources resources = Marvin_Watchface.this.getResources();
-            boolean isRound = insets.isRound();
-            mXOffset = R.dimen.digital_x_offset;
-            float timeSize = R.dimen.digital_time_size;
-            float dateSize = R.dimen.digital_date_size;
+            mXOffset = resources.getDimension(R.dimen.digital_x_offset);
+ //           float timeSize = 96; // R.dimen.digital_time_size;
+//            float dateSize = 32; //R.dimen.digital_date_size;
+            float timeSize = resources.getDimension(R.dimen.digital_time_size);
+            float dateSize = resources.getDimension(R.dimen.digital_date_size);
             mTimePaint.setTextSize(timeSize);
             mDatePaint.setTextSize(dateSize);
+            Log.d(TAG, "offsets " + mXOffset + ", " + timeSize + " - " + dateSize);
         }
 
         @Override
@@ -344,7 +345,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                     shading.setARGB(0x80, 4*i/2, 4*i/2, 4*i/2);;
                     canvas.drawRect(0, 4*i, bounds.width(), 4*i+4, shading);
                 }
-                canvas.drawBitmap(mSpaceBitmap, 32, 40, null);
+                canvas.drawBitmap(mSpaceBitmap, 32, 36, null);
                 canvas.drawBitmap(mMarsBitmap, 40, 332, null);
                 canvas.drawBitmap(mEarthBitmap, 330, 120, null);
                 canvas.drawBitmap(mFeetBitmap, 110, 88, null);
@@ -361,17 +362,9 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                 }
             }
 
-            Paint abc = new Paint();
-            abc.setTextSize(32);
-            abc.setAntiAlias(false);
-            abc.setTypeface(Typeface.SERIF);
-            abc.setARGB(0xFF, 0x12, 0x34, 0x56);
-            canvas.drawText("abc", 100, 100, abc);
-
             String time_str = String.format("%d:%02d", hour, minute);
             canvas.drawText(time_str, mXOffset, mYOffset, mTimePaint);
-            Log.d(TAG, "OnDraw() " + hour + ":" + minute + ":" + second);
-/*
+
             int week_yoff, date_yoff;
             week_yoff = 0; date_yoff = 0;
             if (!isInAmbientMode()) {
@@ -379,13 +372,13 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             }
             if (getPeekCardPosition().isEmpty()) {
                 if (!isInAmbientMode()) {
-                    canvas.drawText(mDayDateFormat.format(mDate), mXOffset + 64, mYOffset + mLineHeight - week_yoff - 5, mDatePaint);
+                    canvas.drawText(mDayDateFormat.format(mDate), mXOffset + 44, mYOffset + mLineHeight - week_yoff - 5, mDatePaint);
                 } else {
                     canvas.drawText(mDayOfWeekFormat.format(mDate), mXOffset + 64, mYOffset + mLineHeight - week_yoff, mDatePaint);
                     canvas.drawText(mDateFormat.format(mDate), mXOffset + 64, mYOffset + mLineHeight * 2 - date_yoff - 4, mDatePaint);
                 }
             }
-*/
+
             //// Draw step complication
             if (!isInAmbientMode()) {
                 drawComplications(canvas, now);
@@ -415,11 +408,11 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             if (!isInAmbientMode()) {
                 int xoff, yoff, tsec, msec, toff;
                 int xpos, ypos;
-                Paint BoltClr = new Paint();
+                Paint boltpaint = new Paint();
 
                 xoff = 170; yoff = 294;
-                BoltClr.setARGB(0xFF, 0x0F, 0xDD, 0xAF);
-                BoltClr.setTextSize(24);
+                boltpaint.setARGB(0xFF, 0x0F, 0xDD, 0xAF);
+                boltpaint.setTextSize(24);
                 tsec = mCalendar.get(Calendar.SECOND);
                 msec = mCalendar.get(Calendar.MILLISECOND)/500;
                 String tstr = Integer.toString(tsec);
@@ -431,18 +424,18 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                 for (int i = 1; i <= toff; i++) {
                     ypos = yoff + (int) (10 * Math.cos((i/2) % (360 / 30)));
                     if (i != toff) {
-                        canvas.drawCircle(xoff + i, ypos, 1.5f , BoltClr);
+                        canvas.drawCircle(xoff + i, ypos, 1.5f , boltpaint);
                     } else {
                         if (tsec != 60) {
-                            canvas.drawText(tstr, xpos, ypos, BoltClr);
+                            canvas.drawText(tstr, xpos, ypos, boltpaint);
                         } else {
-                            BoltClr.setStrokeWidth(6);
-                            BoltClr.setARGB(0xFF, 0xFF, 0x00, 0x00);
+                            boltpaint.setStrokeWidth(6);
+                            boltpaint.setARGB(0xFF, 0xFF, 0x00, 0x00);
                             xpos = xpos + 8; ypos = ypos - 12;
-                            canvas.drawLine(xpos - 16, ypos + 0,  xpos + 16, ypos + 0,  BoltClr);
-                            canvas.drawLine(xpos + 0,  ypos - 16, xpos + 0,  ypos + 16, BoltClr);
-                            canvas.drawLine(xpos - 16, ypos - 16, xpos + 16, ypos + 16, BoltClr);
-                            canvas.drawLine(xpos - 16, ypos + 16, xpos + 16, ypos - 16, BoltClr);
+                            canvas.drawLine(xpos - 16, ypos + 0,  xpos + 16, ypos + 0,  boltpaint);
+                            canvas.drawLine(xpos + 0,  ypos - 16, xpos + 0,  ypos + 16, boltpaint);
+                            canvas.drawLine(xpos - 16, ypos - 16, xpos + 16, ypos + 16, boltpaint);
+                            canvas.drawLine(xpos - 16, ypos + 16, xpos + 16, ypos - 16, boltpaint);
                         }
                     }
                 }
@@ -494,7 +487,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             mActiveComplicationDataSparseArray = new SparseArray<>(COMPLICATION_IDS.length);
             mComplicationPaint = new Paint();
             mComplicationPaint.setARGB(0xFF, 0xCC, 0xCC, 0xCC);
-            mComplicationPaint.setTextSize(R.dimen.digital_date_size);
+            mComplicationPaint.setTextSize(32);
             mComplicationPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
             mComplicationPaint.setAntiAlias(true);
 
