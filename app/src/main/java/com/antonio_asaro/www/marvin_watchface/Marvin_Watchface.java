@@ -59,7 +59,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
      * Update rate in milliseconds for interactive mode. Defaults to one second
      * because the watch face needs to update seconds in interactive mode.
      */
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.MILLISECONDS.toMillis(1000);
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.MILLISECONDS.toMillis(500);
 
     /**
      * Handler message id for updating the time periodically in interactive mode.
@@ -134,6 +134,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
         Bitmap mFlagBitmap;
         Bitmap mMarvinBitmap;
         float mLineHeight;
+        int abc = 0;
 
         float mBatteryLevel;
         Intent batteryStatus;
@@ -181,7 +182,6 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             mMarvinBitmap = ((BitmapDrawable) mMarvinDrawable).getBitmap();
             mBatteryLevel = -1;
             mBatteryPaint = new Paint();
-            mCalendar = Calendar.getInstance();
             mDate = new Date();
             initFormats();
             mDatePaint = new Paint();
@@ -260,8 +260,6 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
 
             Resources resources = Marvin_Watchface.this.getResources();
             mXOffset = resources.getDimension(R.dimen.digital_x_offset);
- //           float timeSize = 96; // R.dimen.digital_time_size;
-//            float dateSize = 32; //R.dimen.digital_date_size;
             float timeSize = resources.getDimension(R.dimen.digital_time_size);
             float dateSize = resources.getDimension(R.dimen.digital_date_size);
             mTimePaint.setTextSize(timeSize);
@@ -321,7 +319,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-////            Log.d(TAG, "OnDraw()");
+        Log.d(TAG, "OnDraw()");
 
             // Draw the background.
             if (isInAmbientMode()) {
@@ -336,6 +334,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             int hour = mCalendar.get(Calendar.HOUR);
             int minute = mCalendar.get(Calendar.MINUTE);
             int second = mCalendar.get(Calendar.SECOND);
+            int millisec = mCalendar.get(Calendar.MILLISECOND);
 
             //// Draw the background.
             if (!isInAmbientMode()) {
@@ -413,14 +412,14 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                 xoff = 170; yoff = 294;
                 boltpaint.setARGB(0xFF, 0x0F, 0xDD, 0xAF);
                 boltpaint.setTextSize(24);
-                tsec = mCalendar.get(Calendar.SECOND);
-                msec = mCalendar.get(Calendar.MILLISECOND)/500;
+                tsec = second; msec = millisec/500;
                 String tstr = Integer.toString(tsec);
                 if (tsec < 10) { tstr = "0" + tstr; };
                 if (tsec == 0) { tsec = 60; }
 
                 toff = 2 * tsec + msec;
                 xpos = xoff + toff;
+
                 for (int i = 1; i <= toff; i++) {
                     ypos = yoff + (int) (10 * Math.cos((i/2) % (360 / 30)));
                     if (i != toff) {
