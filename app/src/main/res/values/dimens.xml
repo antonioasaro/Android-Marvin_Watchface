@@ -5,4 +5,8 @@
     <dimen name="digital_x_offset">64dp</dimen>
     <dimen name="digital_y_offset">122dp</dimen>
     <dimen name="digital_line_height">24dp</dimen>
+
+    <dimen name="content_padding_start">12dp</dimen>
+    <dimen name="digital_config_color_picker_item_margin">32dp</dimen>
+
 </resources>

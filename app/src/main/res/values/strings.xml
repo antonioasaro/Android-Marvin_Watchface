@@ -2,4 +2,29 @@
     <string name="app_name">Marvin Watchface</string>
     <string name="message">Watch face tapped</string>
     <string name="my_digital_name">Marvin Watchface</string>
+    <string name="digital_background_color">black</string>
+
+    <!-- TODO: this should be shared (needs covering all the samples with Gradle build model) -->
+    <string name="color_black">black</string>
+    <string name="color_darkgrey">darkgrey</string>
+    <string name="color_grey">grey</string>
+    <string name="color_silver">silver</string>
+    <string name="color_lightgrey">lightgrey</string>
+    <string name="color_white">white</string>
+    <string name="color_red">red</string>
+    <string name="color_blue">blue</string>
+    <string name="color_green">green</string>
+
+    <string-array name="color_array">
+        <item>@string/color_black</item>
+        <item>@string/color_darkgrey</item>
+        <item>@string/color_grey</item>
+        <item>@string/color_silver</item>
+        <item>@string/color_lightgrey</item>
+        <item>@string/color_white</item>
+        <item>@string/color_red</item>
+        <item>@string/color_green</item>
+        <item>@string/color_blue</item>
+    </string-array>
+
 </resources>

@@ -19,7 +19,7 @@
             android:value="true" />
 
         <service
-            android:name=".Marvin_Watchface"
+            android:name=".Marvin_Watchface_Service"
             android:label="@string/my_digital_name"
             android:permission="android.permission.BIND_WALLPAPER">
             <meta-data
@@ -32,6 +32,12 @@
                 android:name="com.google.android.wearable.watchface.preview_circular"
                 android:resource="@drawable/preview_digital_circular" />
 
+            <meta-data
+                android:name=
+                    "com.google.android.wearable.watchface.wearableConfigurationAction"
+                android:value=
+                    "com.example.android.wearable.watchface.CONFIG_DIGITAL" />
+
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
 
@@ -42,6 +48,19 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".Marvin_Watchface_ConfigActivity"
+            android:label="Marvin_Watchface configuration">
+            <intent-filter>
+                <action android:name=
+                    "com.example.android.wearable.watchface.CONFIG_DIGITAL" />
+                <category android:name=
+                    "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

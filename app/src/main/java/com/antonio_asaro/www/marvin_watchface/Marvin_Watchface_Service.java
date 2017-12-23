@@ -50,8 +50,8 @@ import java.util.concurrent.TimeUnit;
  * in the Google Watch Face Code Lab:
  * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
  */
-public class Marvin_Watchface extends CanvasWatchFaceService {
-    private static final String TAG = "Android-Marvin_Watchface";
+public class Marvin_Watchface_Service extends CanvasWatchFaceService {
+    private static final String TAG = "Android-Marvin_Watchface_Service";
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
@@ -79,15 +79,15 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
     }
 
     private static class EngineHandler extends Handler {
-        private final WeakReference<Marvin_Watchface.Engine> mWeakReference;
+        private final WeakReference<Marvin_Watchface_Service.Engine> mWeakReference;
 
-        public EngineHandler(Marvin_Watchface.Engine reference) {
+        public EngineHandler(Marvin_Watchface_Service.Engine reference) {
             mWeakReference = new WeakReference<>(reference);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            Marvin_Watchface.Engine engine = mWeakReference.get();
+            Marvin_Watchface_Service.Engine engine = mWeakReference.get();
             if (engine != null) {
                 switch (msg.what) {
                     case MSG_UPDATE_TIME:
@@ -150,13 +150,13 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             Log.d(TAG, "OnCreate()");
             super.onCreate(holder);
 
-            setWatchFaceStyle(new WatchFaceStyle.Builder(Marvin_Watchface.this)
+            setWatchFaceStyle(new WatchFaceStyle.Builder(Marvin_Watchface_Service.this)
                     .setAcceptsTapEvents(true)
                     .build());
 
             mCalendar = Calendar.getInstance();
 
-            Resources resources = Marvin_Watchface.this.getResources();
+            Resources resources = Marvin_Watchface_Service.this.getResources();
             mYOffset = resources.getDimension(R.dimen.digital_y_offset);
 
             //// Initialize resources
@@ -206,7 +206,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
         private void initFormats() {
             mDayOfWeekFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
             mDayOfWeekFormat.setCalendar(mCalendar);
-            mDateFormat = DateFormat.getDateFormat(Marvin_Watchface.this);
+            mDateFormat = DateFormat.getDateFormat(Marvin_Watchface_Service.this);
             mDateFormat.setCalendar(mCalendar);
             mDayDateFormat = new SimpleDateFormat("EEE MMM d", Locale.getDefault());
             mDayDateFormat.setCalendar(mCalendar);
@@ -243,7 +243,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-            Marvin_Watchface.this.registerReceiver(mTimeZoneReceiver, filter);
+            Marvin_Watchface_Service.this.registerReceiver(mTimeZoneReceiver, filter);
         }
 
         private void unregisterReceiver() {
@@ -251,14 +251,14 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                 return;
             }
             mRegisteredTimeZoneReceiver = false;
-            Marvin_Watchface.this.unregisterReceiver(mTimeZoneReceiver);
+            Marvin_Watchface_Service.this.unregisterReceiver(mTimeZoneReceiver);
         }
 
         @Override
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
 
-            Resources resources = Marvin_Watchface.this.getResources();
+            Resources resources = Marvin_Watchface_Service.this.getResources();
             mXOffset = resources.getDimension(R.dimen.digital_x_offset);
             float timeSize = resources.getDimension(R.dimen.digital_time_size);
             float dateSize = resources.getDimension(R.dimen.digital_date_size);
@@ -319,7 +319,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-        Log.d(TAG, "OnDraw()");
+////        Log.d(TAG, "OnDraw()");
 
             // Draw the background.
             if (isInAmbientMode()) {
@@ -353,7 +353,7 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             } else {
                 mBackgroundPaint.setARGB(0xFF, 0x00, 0x00, 0x00);
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
-                canvas.drawBitmap(mDarkBitmap, 20, 66, null);
+                canvas.drawBitmap(mDarkBitmap, 32, 66, null);
                 if ((mCalendar.get(Calendar.HOUR_OF_DAY)>=7) && (mCalendar.get(Calendar.HOUR_OF_DAY)<=(7+12))) {
                     canvas.drawBitmap(mSunBitmap, 324, 156, null);
                 } else {
@@ -362,7 +362,9 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
             }
 
             String time_str = String.format("%d:%02d", hour, minute);
-            canvas.drawText(time_str, mXOffset, mYOffset, mTimePaint);
+            int time_off = 0;
+            if (hour>9) { time_off = 20; }
+            canvas.drawText(time_str, mXOffset - time_off, mYOffset, mTimePaint);
 
             int week_yoff, date_yoff;
             week_yoff = 0; date_yoff = 0;
@@ -373,8 +375,8 @@ public class Marvin_Watchface extends CanvasWatchFaceService {
                 if (!isInAmbientMode()) {
                     canvas.drawText(mDayDateFormat.format(mDate), mXOffset + 44, mYOffset + mLineHeight - week_yoff - 5, mDatePaint);
                 } else {
-                    canvas.drawText(mDayOfWeekFormat.format(mDate), mXOffset + 64, mYOffset + mLineHeight - week_yoff, mDatePaint);
-                    canvas.drawText(mDateFormat.format(mDate), mXOffset + 64, mYOffset + mLineHeight * 2 - date_yoff - 4, mDatePaint);
+                    canvas.drawText(mDayOfWeekFormat.format(mDate), mXOffset, mYOffset + mLineHeight - week_yoff, mDatePaint);
+                    canvas.drawText(mDateFormat.format(mDate), mXOffset, mYOffset + mLineHeight * 2 - date_yoff - 4, mDatePaint);
                 }
             }
 
