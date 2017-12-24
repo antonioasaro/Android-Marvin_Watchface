@@ -30,32 +30,14 @@ import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 
-public final class Marvin_Watchface_Util {
-    private static final String TAG = "DigitalWatchFaceUtil";
+public final class Marvin_Watchface_Utility {
+    private static final String TAG = "Marvin_Watchface_Util";
 
     /**
      * The {@link DataMap} key for {@link Marvin_Watchface_Service} background color name.
      * The color name must be a {@link String} recognized by {@link Color#parseColor}.
      */
     public static final String KEY_BACKGROUND_COLOR = "BACKGROUND_COLOR";
-
-    /**
-     * The {@link DataMap} key for {@link Marvin_Watchface_Service} hour digits color name.
-     * The color name must be a {@link String} recognized by {@link Color#parseColor}.
-     */
-    public static final String KEY_HOURS_COLOR = "HOURS_COLOR";
-
-    /**
-     * The {@link DataMap} key for {@link Marvin_Watchface_Service} minute digits color name.
-     * The color name must be a {@link String} recognized by {@link Color#parseColor}.
-     */
-    public static final String KEY_MINUTES_COLOR = "MINUTES_COLOR";
-
-    /**
-     * The {@link DataMap} key for {@link Marvin_Watchface_Service} second digits color name.
-     * The color name must be a {@link String} recognized by {@link Color#parseColor}.
-     */
-    public static final String KEY_SECONDS_COLOR = "SECONDS_COLOR";
 
     /**
      * The path for the {@link DataItem} containing {@link Marvin_Watchface_Service} configuration.
@@ -68,30 +50,6 @@ public final class Marvin_Watchface_Util {
     public static final String COLOR_NAME_DEFAULT_AND_AMBIENT_BACKGROUND = "White";
     public static final int COLOR_VALUE_DEFAULT_AND_AMBIENT_BACKGROUND =
             parseColor(COLOR_NAME_DEFAULT_AND_AMBIENT_BACKGROUND);
-
-    /**
-     * Name of the default interactive mode hour digits color and the ambient mode hour digits
-     * color.
-     */
-    public static final String COLOR_NAME_DEFAULT_AND_AMBIENT_HOUR_DIGITS = "Red";
-    public static final int COLOR_VALUE_DEFAULT_AND_AMBIENT_HOUR_DIGITS =
-            parseColor(COLOR_NAME_DEFAULT_AND_AMBIENT_HOUR_DIGITS);
-
-    /**
-     * Name of the default interactive mode minute digits color and the ambient mode minute digits
-     * color.
-     */
-    public static final String COLOR_NAME_DEFAULT_AND_AMBIENT_MINUTE_DIGITS = "Red";
-    public static final int COLOR_VALUE_DEFAULT_AND_AMBIENT_MINUTE_DIGITS =
-            parseColor(COLOR_NAME_DEFAULT_AND_AMBIENT_MINUTE_DIGITS);
-
-    /**
-     * Name of the default interactive mode second digits color and the ambient mode second digits
-     * color.
-     */
-    public static final String COLOR_NAME_DEFAULT_AND_AMBIENT_SECOND_DIGITS = "Red";
-    public static final int COLOR_VALUE_DEFAULT_AND_AMBIENT_SECOND_DIGITS =
-            parseColor(COLOR_NAME_DEFAULT_AND_AMBIENT_SECOND_DIGITS);
 
     /**
      * Callback interface to perform an action with the current config {@link DataMap} for
@@ -125,7 +83,7 @@ public final class Marvin_Watchface_Util {
                         String localNode = getLocalNodeResult.getNode().getId();
                         Uri uri = new Uri.Builder()
                                 .scheme("wear")
-                                .path(Marvin_Watchface_Util.PATH_WITH_FEATURE)
+                                .path(Marvin_Watchface_Utility.PATH_WITH_FEATURE)
                                 .authority(localNode)
                                 .build();
                         Wearable.DataApi.getDataItem(client, uri)
@@ -146,14 +104,14 @@ public final class Marvin_Watchface_Util {
     public static void overwriteKeysInConfigDataMap(final GoogleApiClient googleApiClient,
             final DataMap configKeysToOverwrite) {
 
-        Marvin_Watchface_Util.fetchConfigDataMap(googleApiClient,
+        Marvin_Watchface_Utility.fetchConfigDataMap(googleApiClient,
                 new FetchConfigDataMapCallback() {
                     @Override
                     public void onConfigDataMapFetched(DataMap currentConfig) {
                         DataMap overwrittenConfig = new DataMap();
                         overwrittenConfig.putAll(currentConfig);
                         overwrittenConfig.putAll(configKeysToOverwrite);
-                        Marvin_Watchface_Util.putConfigDataItem(googleApiClient, overwrittenConfig);
+                        Marvin_Watchface_Utility.putConfigDataItem(googleApiClient, overwrittenConfig);
                     }
                 }
         );
@@ -202,5 +160,5 @@ public final class Marvin_Watchface_Util {
         }
     }
 
-    private Marvin_Watchface_Util() { }
+    private Marvin_Watchface_Utility() { }
 }

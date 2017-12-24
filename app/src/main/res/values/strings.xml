@@ -2,7 +2,7 @@
     <string name="app_name">Marvin Watchface</string>
     <string name="message">Watch face tapped</string>
     <string name="my_digital_name">Marvin Watchface</string>
-    <string name="digital_background_color">black</string>
+    <string name="select_title">Select color</string>
 
     <!-- TODO: this should be shared (needs covering all the samples with Gradle build model) -->
     <string name="color_black">black</string>

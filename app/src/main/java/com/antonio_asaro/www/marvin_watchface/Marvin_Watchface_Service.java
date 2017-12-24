@@ -30,6 +30,16 @@ import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Wearable;
+
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -51,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
  */
 public class Marvin_Watchface_Service extends CanvasWatchFaceService {
-    private static final String TAG = "Android-Marvin_Watchface_Service";
+    private static final String TAG = "Marvin_Watchface_Serv";
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
@@ -98,7 +108,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         }
     }
 
-    private class Engine extends CanvasWatchFaceService.Engine {
+    private class Engine extends CanvasWatchFaceService.Engine implements DataApi.DataListener,
+                GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
         private final Handler mUpdateTimeHandler = new EngineHandler(this);
         private Calendar mCalendar;
@@ -115,6 +126,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         private Paint mBackgroundPaint;
         private Paint mTimePaint;
         private Paint mDatePaint;
+        int mInteractiveBackgroundColor = Marvin_Watchface_Utility.COLOR_VALUE_DEFAULT_AND_AMBIENT_BACKGROUND;
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
          * disable anti-aliasing in ambient mode.
@@ -144,6 +156,46 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         SimpleDateFormat mDayOfWeekFormat;
         SimpleDateFormat mDayDateFormat;
         java.text.DateFormat mDateFormat;
+
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(Marvin_Watchface_Service.this)
+                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
+                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
+                .addApi(Wearable.API)
+                .build();
+
+        @Override  // GoogleApiClient.ConnectionCallbacks
+        public void onConnected(Bundle connectionHint) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "onConnected: " + connectionHint);
+            }
+            Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
+            updateConfigDataItemAndUiOnStartup();
+        }
+
+        @Override  // GoogleApiClient.ConnectionCallbacks
+        public void onConnectionSuspended(int cause) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "onConnectionSuspended: " + cause);
+            }
+        }
+
+        @Override  // GoogleApiClient.OnConnectionFailedListener
+        public void onConnectionFailed(ConnectionResult result) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "onConnectionFailed: " + result);
+            }
+        }
+
+        private void setInteractiveBackgroundColor(int color) {
+            mInteractiveBackgroundColor = color;
+            updatePaintIfInteractive(mBackgroundPaint, color);
+        }
+
+        private void updatePaintIfInteractive(Paint paint, int interactiveColor) {
+            if (!isInAmbientMode() && paint != null) {
+                paint.setColor(interactiveColor);
+            }
+        }
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -264,7 +316,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             float dateSize = resources.getDimension(R.dimen.digital_date_size);
             mTimePaint.setTextSize(timeSize);
             mDatePaint.setTextSize(dateSize);
-            Log.d(TAG, "offsets " + mXOffset + ", " + timeSize + " - " + dateSize);
         }
 
         @Override
@@ -338,6 +389,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
             //// Draw the background.
             if (!isInAmbientMode()) {
+                mTimePaint.setARGB(0xFF, 0xCC, 0x00, 0x00);
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
                 Paint shading = new Paint();
                 for (int i=0; i<bounds.height()/4; i++) {
@@ -351,19 +403,21 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 canvas.drawBitmap(mFlagBitmap, 276, 276, null);
                 canvas.drawBitmap(mMarvinBitmap, 42, 226, null);
             } else {
+                mTimePaint.setARGB(0xFF, 0xFF, 0xFF, 0xFF);
                 mBackgroundPaint.setARGB(0xFF, 0x00, 0x00, 0x00);
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
-                canvas.drawBitmap(mDarkBitmap, 32, 66, null);
+                canvas.drawBitmap(mDarkBitmap, 36, 66, null);
                 if ((mCalendar.get(Calendar.HOUR_OF_DAY)>=7) && (mCalendar.get(Calendar.HOUR_OF_DAY)<=(7+12))) {
-                    canvas.drawBitmap(mSunBitmap, 324, 156, null);
+                    canvas.drawBitmap(mSunBitmap, 328, 156, null);
                 } else {
-                    canvas.drawBitmap(mMoonBitmap, 324, 156, null);
+                    canvas.drawBitmap(mMoonBitmap, 328, 156, null);
                 }
             }
 
-            String time_str = String.format("%d:%02d", hour, minute);
             int time_off = 0;
-            if (hour>9) { time_off = 20; }
+            if (hour == 0) {hour = 12; }
+            if (hour>9) { time_off = 24; }
+            String time_str = String.format("%d:%02d", hour, minute);
             canvas.drawText(time_str, mXOffset - time_off, mYOffset, mTimePaint);
 
             int week_yoff, date_yoff;
@@ -373,7 +427,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             }
             if (getPeekCardPosition().isEmpty()) {
                 if (!isInAmbientMode()) {
-                    canvas.drawText(mDayDateFormat.format(mDate), mXOffset + 44, mYOffset + mLineHeight - week_yoff - 5, mDatePaint);
+                    canvas.drawText(mDayDateFormat.format(mDate), mXOffset + 8, mYOffset + mLineHeight - week_yoff - 5, mDatePaint);
                 } else {
                     canvas.drawText(mDayOfWeekFormat.format(mDate), mXOffset, mYOffset + mLineHeight - week_yoff, mDatePaint);
                     canvas.drawText(mDateFormat.format(mDate), mXOffset, mYOffset + mLineHeight * 2 - date_yoff - 4, mDatePaint);
@@ -523,6 +577,92 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                             mComplicationPaint);
                 }
             }
+        }
+
+        private void updateConfigDataItemAndUiOnStartup() {
+            Marvin_Watchface_Utility.fetchConfigDataMap(mGoogleApiClient,
+                    new Marvin_Watchface_Utility.FetchConfigDataMapCallback() {
+                        @Override
+                        public void onConfigDataMapFetched(DataMap startupConfig) {
+                            // If the DataItem hasn't been created yet or some keys are missing,
+                            // use the default values.
+                            setDefaultValuesForMissingConfigKeys(startupConfig);
+                            Marvin_Watchface_Utility.putConfigDataItem(mGoogleApiClient, startupConfig);
+
+                            updateUiForConfigDataMap(startupConfig);
+                        }
+                    }
+            );
+        }
+
+        private void setDefaultValuesForMissingConfigKeys(DataMap config) {
+            addIntKeyIfMissing(config, Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR,
+                    Marvin_Watchface_Utility.COLOR_VALUE_DEFAULT_AND_AMBIENT_BACKGROUND);
+        }
+
+        private void addIntKeyIfMissing(DataMap config, String key, int color) {
+            if (!config.containsKey(key)) {
+                config.putInt(key, color);
+            }
+        }
+
+        @Override // DataApi.DataListener
+        public void onDataChanged(DataEventBuffer dataEvents) {
+            Log.d(TAG, "OnDataChanged()");
+            for (DataEvent dataEvent : dataEvents) {
+                if (dataEvent.getType() != DataEvent.TYPE_CHANGED) {
+                    continue;
+                }
+
+                DataItem dataItem = dataEvent.getDataItem();
+                if (!dataItem.getUri().getPath().equals(
+                        Marvin_Watchface_Utility.PATH_WITH_FEATURE)) {
+                    continue;
+                }
+
+                DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
+                DataMap config = dataMapItem.getDataMap();
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(TAG, "Config DataItem updated:" + config);
+                }
+                updateUiForConfigDataMap(config);
+            }
+        }
+
+        private void updateUiForConfigDataMap(final DataMap config) {
+            boolean uiUpdated = false;
+            for (String configKey : config.keySet()) {
+                if (!config.containsKey(configKey)) {
+                    continue;
+                }
+                int color = config.getInt(configKey);
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(TAG, "Found watch face config key: " + configKey + " -> "
+                            + Integer.toHexString(color));
+                }
+                if (updateUiForKey(configKey, color)) {
+                    uiUpdated = true;
+                }
+            }
+            if (uiUpdated) {
+                invalidate();
+            }
+        }
+
+        /**
+         * Updates the color of a UI item according to the given {@code configKey}. Does nothing if
+         * {@code configKey} isn't recognized.
+         *
+         * @return whether UI has been updated
+         */
+        private boolean updateUiForKey(String configKey, int color) {
+            if (configKey.equals(Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR)) {
+                setInteractiveBackgroundColor(color);
+            } else {
+                Log.w(TAG, "Ignoring unknown config key: " + configKey);
+                return false;
+            }
+            return true;
         }
     }
 }

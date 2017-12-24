@@ -40,10 +40,10 @@ import com.google.android.gms.wearable.Wearable;
 
 
 /**
- * The watch-side config activity for {@link Marvin_Watchface_ConfigActivity}, which allows for setting the
+ * The watch-side config activity for {@link Marvin_Watchface_Config}, which allows for setting the
  * background color.
  */
-public class Marvin_Watchface_ConfigActivity extends Activity implements
+public class Marvin_Watchface_Config extends Activity implements
         WearableListView.ClickListener, WearableListView.OnScrollListener {
     private static final String TAG = "Marvin_Watchface_Config";
 
@@ -53,7 +53,7 @@ public class Marvin_Watchface_ConfigActivity extends Activity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_digital_config);
+        setContentView(R.layout.activity_config);
 
         mHeader = (TextView) findViewById(R.id.header);
         WearableListView listView = (WearableListView) findViewById(R.id.color_picker);
@@ -149,9 +149,9 @@ public class Marvin_Watchface_ConfigActivity extends Activity implements
 
     private void updateConfigDataItem(final int backgroundColor) {
         DataMap configKeysToOverwrite = new DataMap();
-        configKeysToOverwrite.putInt(Marvin_Watchface_Util.KEY_BACKGROUND_COLOR,
+        configKeysToOverwrite.putInt(Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR,
                 backgroundColor);
-        Marvin_Watchface_Util.overwriteKeysInConfigDataMap(mGoogleApiClient, configKeysToOverwrite);
+        Marvin_Watchface_Utility.overwriteKeysInConfigDataMap(mGoogleApiClient, configKeysToOverwrite);
     }
 
     private class ColorListAdapter extends WearableListView.Adapter {
@@ -176,7 +176,7 @@ public class Marvin_Watchface_ConfigActivity extends Activity implements
                     new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
             int colorPickerItemMargin = (int) getResources()
-                    .getDimension(R.dimen.digital_config_color_picker_item_margin);
+                    .getDimension(R.dimen.config_color_picker_item_margin);
             // Add margins to first and last item to make it possible for user to tap on them.
             if (position == 0) {
                 layoutParams.setMargins(0, colorPickerItemMargin, 0, 0);
@@ -221,7 +221,7 @@ public class Marvin_Watchface_ConfigActivity extends Activity implements
 
         public ColorItem(Context context) {
             super(context);
-            View.inflate(context, R.layout.digital_color_picker_item, this);
+            View.inflate(context, R.layout.color_picker_item, this);
 
             mLabel = (TextView) findViewById(R.id.label);
             mColor = (CircledImageView) findViewById(R.id.color);
