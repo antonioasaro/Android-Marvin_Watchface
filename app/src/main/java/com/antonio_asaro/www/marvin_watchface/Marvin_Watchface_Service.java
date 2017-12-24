@@ -158,8 +158,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         java.text.DateFormat mDateFormat;
 
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(Marvin_Watchface_Service.this)
-                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
-                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .addApi(Wearable.API)
                 .build();
 
@@ -209,6 +209,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                     .build());
 
             mCalendar = Calendar.getInstance();
+            updateConfigDataItemAndUiOnStartup();
 
             Resources resources = Marvin_Watchface_Service.this.getResources();
             mYOffset = resources.getDimension(R.dimen.digital_y_offset);
@@ -277,6 +278,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             super.onVisibilityChanged(visible);
 
             if (visible) {
+                mGoogleApiClient.connect();
                 registerReceiver();
 
                 // Update time zone in case it changed while we weren't visible.
@@ -284,6 +286,11 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 invalidate();
             } else {
                 unregisterReceiver();
+
+                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    Wearable.DataApi.removeListener(mGoogleApiClient, this);
+                    mGoogleApiClient.disconnect();
+                }
             }
 
             // Whether the timer should be running depends on whether we're visible (as well as
@@ -582,6 +589,9 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         }
 
         private void updateConfigDataItemAndUiOnStartup() {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "updateConfigDataItemAndUiOnStartup()");
+            }
             Marvin_Watchface_Utility.fetchConfigDataMap(mGoogleApiClient,
                     new Marvin_Watchface_Utility.FetchConfigDataMapCallback() {
                         @Override
@@ -598,11 +608,17 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         }
 
         private void setDefaultValuesForMissingConfigKeys(DataMap config) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "setDefaultValuesForMissingConfigKeys()");
+            }
             addIntKeyIfMissing(config, Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR,
                     Marvin_Watchface_Utility.COLOR_VALUE_DEFAULT_AND_AMBIENT_BACKGROUND);
         }
 
         private void addIntKeyIfMissing(DataMap config, String key, int color) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "addIntKeyIfMissing()");
+            }
             if (!config.containsKey(key)) {
                 config.putInt(key, color);
             }
@@ -610,6 +626,10 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
         @Override // DataApi.DataListener
         public void onDataChanged(DataEventBuffer dataEvents) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "onDataChanged()");
+            }
+
             for (DataEvent dataEvent : dataEvents) {
                 if (dataEvent.getType() != DataEvent.TYPE_CHANGED) {
                     continue;
