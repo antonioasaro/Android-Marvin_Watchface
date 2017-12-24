@@ -199,7 +199,9 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
         @Override
         public void onCreate(SurfaceHolder holder) {
-            Log.d(TAG, "OnCreate()");
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "OnCreate()");
+            }
             super.onCreate(holder);
 
             setWatchFaceStyle(new WatchFaceStyle.Builder(Marvin_Watchface_Service.this)
@@ -537,8 +539,9 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         private SparseArray<ComplicationDrawable> mComplicationDrawableSparseArray;
 
         private void initializeComplications() {
-            Log.d(TAG, "initializeComplications()");
-
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "initializeComplications()");
+            }
             mActiveComplicationDataSparseArray = new SparseArray<>(COMPLICATION_IDS.length);
             mComplicationPaint = new Paint();
             mComplicationPaint.setARGB(0xFF, 0xCC, 0xCC, 0xCC);
@@ -552,7 +555,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
         @Override
         public void onComplicationDataUpdate(int complicationId, ComplicationData complicationData) {
-            Log.d(TAG, "onComplicationDataUpdate() id: " + complicationId);
             mActiveComplicationDataSparseArray.put(complicationId, complicationData);
             invalidate();
         }
@@ -608,7 +610,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
         @Override // DataApi.DataListener
         public void onDataChanged(DataEventBuffer dataEvents) {
-            Log.d(TAG, "OnDataChanged()");
             for (DataEvent dataEvent : dataEvents) {
                 if (dataEvent.getType() != DataEvent.TYPE_CHANGED) {
                     continue;
