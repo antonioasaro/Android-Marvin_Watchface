@@ -391,6 +391,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             long now = System.currentTimeMillis();
             mCalendar.setTimeInMillis(now);
+            mDate.setTime(now);
             int hour = mCalendar.get(Calendar.HOUR);
             int minute = mCalendar.get(Calendar.MINUTE);
             int second = mCalendar.get(Calendar.SECOND);
@@ -412,20 +413,22 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 canvas.drawBitmap(mFlagBitmap, 276, 276, null);
                 canvas.drawBitmap(mMarvinBitmap, 42, 226, null);
             } else {
+                float xcir = (float) (8 * Math.sin(minute));
+                float ycir = (float) (8 * Math.cos(minute));
                 mTimePaint.setARGB(0xFF, 0xFF, 0xFF, 0xFF);
                 mBackgroundPaint.setARGB(0xFF, 0x00, 0x00, 0x00);
-                canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
-                canvas.drawBitmap(mDarkBitmap, 36, 66, null);
+                canvas.drawRect(0,0 , bounds.width(), bounds.height(), mBackgroundPaint);
+                canvas.drawBitmap(mDarkBitmap, 24 + xcir, 66 + ycir, null);
                 if ((mCalendar.get(Calendar.HOUR_OF_DAY)>=7) && (mCalendar.get(Calendar.HOUR_OF_DAY)<=(7+12))) {
-                    canvas.drawBitmap(mSunBitmap, 328, 156, null);
+                    canvas.drawBitmap(mSunBitmap, 324 + xcir, 156 + ycir, null);
                 } else {
-                    canvas.drawBitmap(mMoonBitmap, 328, 156, null);
+                    canvas.drawBitmap(mMoonBitmap, 324 + xcir, 156 + ycir, null);
                 }
             }
 
             int time_off = 0;
             if (hour == 0) {hour = 12; }
-            if (hour>9) { time_off = 24; }
+            if (hour>9) { time_off = 28; }
             String time_str = String.format("%d:%02d", hour, minute);
             canvas.drawText(time_str, mXOffset - time_off, mYOffset, mTimePaint);
 
