@@ -473,7 +473,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
             //// Draw the sinusoidal bolt.
             if (!isInAmbientMode()) {
-                int xoff, yoff, tsec, msec, toff;
+                int xoff, yoff, tsec, msec, toff, ypospos;
                 int xpos, ypos;
                 Paint boltpaint = new Paint();
 
@@ -490,15 +490,17 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
                 for (int i = 1; i <= toff; i++) {
                     ypos = yoff + (int) (10 * Math.cos((i/2) % (360 / 30)));
+                    ypospos = yoff + (int) (10 * Math.cos((i/2+1) % (360 / 30)));
                     if (i != toff) {
-                        canvas.drawCircle(xoff + i, ypos, 1.5f , boltpaint);
+////                        canvas.drawCircle(xoff + i, ypos, 1.5f , boltpaint);
+                        canvas.drawLine(xoff + i, ypos,  xoff + i, ypospos,  boltpaint);
                     } else {
                         if (tsec != 60) {
-                            canvas.drawText(tstr, xpos, ypos, boltpaint);
+                            canvas.drawText(tstr, xpos - i%2, ypos, boltpaint);
                         } else {
                             boltpaint.setStrokeWidth(6);
                             boltpaint.setARGB(0xFF, 0xFF, 0x00, 0x00);
-                            xpos = xpos + 8; ypos = ypos - 12;
+                            xpos = xpos + 8 - i%2; ypos = ypos - 12;
                             canvas.drawLine(xpos - 16, ypos + 0,  xpos + 16, ypos + 0,  boltpaint);
                             canvas.drawLine(xpos + 0,  ypos - 16, xpos + 0,  ypos + 16, boltpaint);
                             canvas.drawLine(xpos - 16, ypos - 16, xpos + 16, ypos + 16, boltpaint);
