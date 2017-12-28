@@ -213,6 +213,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
 
             Resources resources = Marvin_Watchface_Service.this.getResources();
             mYOffset = resources.getDimension(R.dimen.digital_y_offset);
+            mLineHeight = resources.getDimension(R.dimen.digital_line_height);
 
             //// Initialize resources
             Drawable mSpaceDrawable = getResources().getDrawable(R.drawable.space, null);
@@ -243,7 +244,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             mDatePaint.setTypeface(NORMAL_TYPEFACE);
             mDatePaint.setAntiAlias(true);
             mDatePaint.setColor(ContextCompat.getColor(getApplicationContext(), R.color.digital_date));
-            mLineHeight = resources.getDimension(R.dimen.digital_line_height);
             initializeComplications();
 
 
