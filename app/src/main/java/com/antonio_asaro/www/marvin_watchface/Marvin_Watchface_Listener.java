@@ -39,6 +39,8 @@ public class Marvin_Watchface_Listener extends WearableListenerService {
                 .setContentText("out of range?")
                 .setSmallIcon(R.drawable.launcher_icon)
                 .setLocalOnly(true)
+                .setVibrate(new long [] {1000, 1000, 1000, 1000})
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(Notification.PRIORITY_MAX);
         Notification card = notificationBuilder.build();
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
