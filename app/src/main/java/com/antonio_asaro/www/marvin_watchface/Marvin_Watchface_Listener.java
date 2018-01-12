@@ -16,81 +16,40 @@
 
 package com.antonio_asaro.www.marvin_watchface;
 
-import android.os.Bundle;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link WearableListenerService} listening for {@link Marvin_Watchface_Service} config messages
  * and updating the config {@link com.google.android.gms.wearable.DataItem} accordingly.
  */
-public class Marvin_Watchface_Listener extends WearableListenerService
-        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class Marvin_Watchface_Listener extends WearableListenerService {
     private static final String TAG = "Marvin_Watchface_List";
 
-    private GoogleApiClient mGoogleApiClient;
+    private static final int FORGOT_PHONE_NOTIFICATION_ID = 1;
 
-    @Override // WearableListenerService
-    public void onMessageReceived(MessageEvent messageEvent) {
-
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "onMessageReceived: " + messageEvent);
-        }
-
-        if (!messageEvent.getPath().equals(Marvin_Watchface_Utility.PATH_WITH_FEATURE)) {
-            return;
-        }
-        byte[] rawData = messageEvent.getData();
-        // It's allowed that the message carries only some of the keys used in the config DataItem
-        // and skips the ones that we don't want to change.
-        DataMap configKeysToOverwrite = DataMap.fromByteArray(rawData);
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Received watch face config message: " + configKeysToOverwrite);
-        }
-
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
-        }
-        if (!mGoogleApiClient.isConnected()) {
-            ConnectionResult connectionResult =
-                    mGoogleApiClient.blockingConnect(30, TimeUnit.SECONDS);
-
-            if (!connectionResult.isSuccess()) {
-                Log.e(TAG, "Failed to connect to GoogleApiClient.");
-                return;
-            }
-        }
-
-        Marvin_Watchface_Utility.overwriteKeysInConfigDataMap(mGoogleApiClient, configKeysToOverwrite);
+    @Override
+    public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {
+        Log.d(TAG, "onPeerDisconnected()");
+        Notification.Builder notificationBuilder = new Notification.Builder(this)
+                .setContentTitle("Bluetooth disconnected")
+                .setContentText("out of range?")
+                .setSmallIcon(R.drawable.launcher_icon)
+                .setLocalOnly(true)
+                .setPriority(Notification.PRIORITY_MAX);
+        Notification card = notificationBuilder.build();
+        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
+                .notify(FORGOT_PHONE_NOTIFICATION_ID, card);
     }
 
-    @Override // GoogleApiClient.ConnectionCallbacks
-    public void onConnected(Bundle connectionHint) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "onConnected: " + connectionHint);
-        }
+    @Override
+    public void onPeerConnected(com.google.android.gms.wearable.Node peer) {
+        Log.d(TAG, "onPeerConnected()");
+        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
+                .cancel(FORGOT_PHONE_NOTIFICATION_ID);
     }
 
-    @Override  // GoogleApiClient.ConnectionCallbacks
-    public void onConnectionSuspended(int cause) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "onConnectionSuspended: " + cause);
-        }
-    }
-
-    @Override  // GoogleApiClient.OnConnectionFailedListener
-    public void onConnectionFailed(ConnectionResult result) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "onConnectionFailed: " + result);
-        }
-    }
 }
