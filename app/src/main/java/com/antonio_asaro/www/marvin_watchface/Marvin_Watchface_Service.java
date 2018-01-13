@@ -441,15 +441,15 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 mTimePaint.setARGB(0xFF, 0xFF, 0xFF, 0xFF);
                 mBackgroundPaint.setARGB(0xFF, 0x00, 0x00, 0x00);
                 canvas.drawRect(0,0 , bounds.width(), bounds.height(), mBackgroundPaint);
-                canvas.drawBitmap(mDarkBitmap, 24 + xcir, 66 + ycir, null);
+                canvas.drawBitmap(mDarkBitmap, 22 + xcir, 66 + ycir, null);
                 if ((mCalendar.get(Calendar.HOUR_OF_DAY)>=7) && (mCalendar.get(Calendar.HOUR_OF_DAY)<=(7+12))) {
-                    canvas.drawBitmap(mSunBitmap, 324 + xcir, 156 + ycir, null);
+                    canvas.drawBitmap(mSunBitmap, 324 + 0 * xcir, 156 + ycir, null);
                 } else {
-                    canvas.drawBitmap(mMoonBitmap, 324 + xcir, 156 + ycir, null);
+                    canvas.drawBitmap(mMoonBitmap, 324 + 0 * xcir, 156 + ycir, null);
                 }
             }
 
-            int time_off = 0;
+            int time_off = 4;
             if (hour == 0) {hour = 12; }
             if (hour>9) { time_off = 28; }
             String time_str = String.format("%d:%02d", hour, minute);
