@@ -172,8 +172,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 Log.d(TAG, "onConnected: " + connectionHint);
             }
             Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
-            updateConfigDataItemAndUiOnStartup();
 
+            updateConfigDataItemAndUiOnStartup();
             inspectNodes();
         }
         private void inspectNodes() {
