@@ -17,6 +17,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationText;
@@ -32,13 +33,16 @@ import android.view.WindowInsets;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+import com.google.android.gms.wearable.Node;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -47,7 +51,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-
 
 /**
  * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
@@ -109,7 +112,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
     }
 
     private class Engine extends CanvasWatchFaceService.Engine implements DataApi.DataListener,
-                GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+                GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<NodeApi.GetConnectedNodesResult> {
 
         private final Handler mUpdateTimeHandler = new EngineHandler(this);
         private Calendar mCalendar;
@@ -146,7 +149,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         Bitmap mFlagBitmap;
         Bitmap mMarvinBitmap;
         float mLineHeight;
-        int abc = 0;
+        boolean mMobileConnected = false;
 
         float mBatteryLevel;
         Intent batteryStatus;
@@ -170,6 +173,26 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             }
             Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
             updateConfigDataItemAndUiOnStartup();
+
+            inspectNodes();
+        }
+        private void inspectNodes() {
+            Log.d(TAG, "inspectNodes()");
+            Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(this, 1000, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void onResult(@NonNull NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+            Log.d(TAG, "onResult()");
+            if (getConnectedNodesResult != null && getConnectedNodesResult.getNodes() != null){
+                mMobileConnected = false;
+                for (Node node : getConnectedNodesResult.getNodes()){
+                    Log.d(TAG, "onResult() Node: " + node);
+                    if (node.isNearby()){
+                        mMobileConnected = true;
+                    }
+                }
+            }
         }
 
         @Override  // GoogleApiClient.ConnectionCallbacks
@@ -690,5 +713,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             }
             return true;
         }
+
     }
 }

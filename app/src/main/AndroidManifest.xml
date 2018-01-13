@@ -62,11 +62,14 @@
             </intent-filter>
         </activity>
 
+        <!--
         <service android:name=".Marvin_Watchface_Listener">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER"/>
+                    <intent-filter>
+                       <action android:name="com.google.android.gms.wearable.BIND_LISTENER"/>
+                <action android:name="com.google.android.gms.wearable.CAPABILITY_CHANGED" />
             </intent-filter>
         </service>
+        -->
 
     </application>
 
