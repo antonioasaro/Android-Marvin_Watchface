@@ -20,7 +20,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.util.Log;
 
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
+
+import java.util.List;
 
 /**
  * A {@link WearableListenerService} listening for {@link Marvin_Watchface_Service} config messages
@@ -28,8 +32,23 @@ import com.google.android.gms.wearable.WearableListenerService;
  */
 public class Marvin_Watchface_Listener extends WearableListenerService {
     private static final String TAG = "Marvin_Watchface_List";
-
     private static final int FORGOT_PHONE_NOTIFICATION_ID = 1;
+
+    @Override
+    public void onCreate() {
+        Log.d(TAG, "onCreate()");
+        super.onCreate();
+    }
+
+    @Override
+    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+        Log.d(TAG, "onCapabilityChanged()");
+    }
+
+    @Override
+    public void onConnectedNodes(List<Node> connectedNodes) {
+        Log.d(TAG, "onConnectedNodes()");
+    }
 
     @Override
     public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {
