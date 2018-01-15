@@ -40,9 +40,9 @@ import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-import com.google.android.gms.wearable.Node;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -172,8 +172,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 Log.d(TAG, "onConnected: " + connectionHint);
             }
             Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
-
             updateConfigDataItemAndUiOnStartup();
+
             inspectNodes();
         }
         private void inspectNodes() {
