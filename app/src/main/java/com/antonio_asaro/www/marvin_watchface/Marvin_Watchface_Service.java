@@ -426,7 +426,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
                 Paint shading = new Paint();
                 for (int i=0; i<bounds.height()/4; i++) {
-                    shading.setARGB(0x80, 4*i/2, 4*i/2, 4*i/2);;
+                    shading.setARGB(0x80, 3*i/2, 3*i/2, 3*i/2);;
                     canvas.drawRect(0, 4*i, bounds.width(), 4*i+4, shading);
                 }
                 canvas.drawBitmap(mSpaceBitmap, 32, 36, null);
@@ -449,10 +449,16 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 }
             }
 
+            // Draw text
             int time_off = 4;
             if (hour == 0) {hour = 12; }
             if (hour>9) { time_off = 28; }
             String time_str = String.format("%d:%02d", hour, minute);
+            if (!isInAmbientMode()) {
+                mTimePaint.setARGB(0xFF, 0x00, 0x00, 0x00);
+                canvas.drawText(time_str, mXOffset - time_off + 6, mYOffset + 6, mTimePaint);
+                mTimePaint.setARGB(0xFF, 0xCC, 0x00, 0x00);
+            }
             canvas.drawText(time_str, mXOffset - time_off, mYOffset, mTimePaint);
 
             int week_yoff, date_yoff;
