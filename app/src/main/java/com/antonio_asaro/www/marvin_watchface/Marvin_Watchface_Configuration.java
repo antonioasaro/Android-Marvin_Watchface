@@ -58,7 +58,7 @@ public class Marvin_Watchface_Configuration extends Activity implements
         setContentView(R.layout.activity_config);
 
         mHeader = (TextView) findViewById(R.id.header);
-        mCheckBT = 0;
+        mCheckBT = Marvin_Watchface_Service.getmEngine().mCheckBT;
         WearableListView listView = (WearableListView) findViewById(R.id.color_picker);
         BoxInsetLayout content = (BoxInsetLayout) findViewById(R.id.content);
         // BoxInsetLayout adds padding by default on round devices. Add some on square devices.
@@ -79,6 +79,8 @@ public class Marvin_Watchface_Configuration extends Activity implements
         listView.setHasFixedSize(true);
         listView.setClickListener(this);
         listView.addOnScrollListener(this);
+        CheckBox mCheckBox = findViewById(R.id.checkbox_BT);
+        if (mCheckBT == 0) { mCheckBox.setChecked(false); } else { mCheckBox.setChecked(true); }
 
         String[] colors = getResources().getStringArray(R.array.color_array);
         listView.setAdapter(new ColorListAdapter(colors));

@@ -85,10 +85,15 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
     private static final int[][] COMPLICATION_SUPPORTED_TYPES = {
             {ComplicationData.TYPE_SHORT_TEXT}
     };
+    private static Engine mEngine;
+
+    public static Engine getmEngine() {
+        return mEngine;
+    }
 
     @Override
     public Engine onCreateEngine() {
-        return new Engine();
+        return mEngine = new Engine();
     }
 
     private static class EngineHandler extends Handler {
@@ -111,7 +116,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         }
     }
 
-    private class Engine extends CanvasWatchFaceService.Engine implements DataApi.DataListener,
+    public class Engine extends CanvasWatchFaceService.Engine implements DataApi.DataListener,
                 GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<NodeApi.GetConnectedNodesResult> {
 
         private final Handler mUpdateTimeHandler = new EngineHandler(this);
@@ -154,7 +159,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         float mBatteryLevel;
         Intent batteryStatus;
         Paint mBatteryPaint;
-        int mCheckBT;
+        public int mCheckBT = 0;
 
         Date mDate;
         SimpleDateFormat mDayOfWeekFormat;
@@ -270,7 +275,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             mDatePaint.setColor(ContextCompat.getColor(getApplicationContext(), R.color.digital_date));
             initializeComplications();
 
-
             // Initializes background.
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(ContextCompat.getColor(getApplicationContext(), R.color.background));
@@ -280,8 +284,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             mTimePaint.setTypeface(NORMAL_TYPEFACE);
             mTimePaint.setAntiAlias(true);
             mTimePaint.setColor(ContextCompat.getColor(getApplicationContext(), R.color.digital_time));
-
-            mCheckBT = 0;
         }
 
         private void initFormats() {
@@ -720,7 +722,6 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 setInteractiveBackgroundColor(color);
             } else {
                 if (configKey.equals(Marvin_Watchface_Utility.KEY_CHECK_BT)) {
-                    Log.w(TAG, "Inspect checkBT: " + configKey + " " + color);
                     mCheckBT = color;
                 } else {
                     Log.w(TAG, "Ignoring unknown config key: " + configKey);

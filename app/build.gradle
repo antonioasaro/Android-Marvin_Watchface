@@ -7,7 +7,7 @@ android {
         minSdkVersion 25
         targetSdkVersion 26
         versionCode 106
-        versionName '1.06'
+        versionName '1.07'
         multiDexEnabled true
     }
     buildTypes {

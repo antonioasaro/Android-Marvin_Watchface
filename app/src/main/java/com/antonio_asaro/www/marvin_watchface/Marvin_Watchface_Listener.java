@@ -53,24 +53,28 @@ public class Marvin_Watchface_Listener extends WearableListenerService {
     @Override
     public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {
         Log.d(TAG, "onPeerDisconnected()");
-        Notification.Builder notificationBuilder = new Notification.Builder(this)
-                .setContentTitle("Bluetooth disconnected")
-                .setContentText("out of range?")
-                .setSmallIcon(R.drawable.launcher_icon)
-                .setLocalOnly(true)
-                .setVibrate(new long [] {1000, 1000, 1000, 1000})
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setPriority(Notification.PRIORITY_MAX);
-        Notification card = notificationBuilder.build();
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-                .notify(FORGOT_PHONE_NOTIFICATION_ID, card);
+        if (Marvin_Watchface_Service.getmEngine().mCheckBT == 1) {
+            Notification.Builder notificationBuilder = new Notification.Builder(this)
+                    .setContentTitle("Bluetooth disconnected")
+                    .setContentText("out of range?")
+                    .setSmallIcon(R.drawable.launcher_icon)
+                    .setLocalOnly(true)
+                    .setVibrate(new long[]{1000, 1000, 1000, 1000})
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setPriority(Notification.PRIORITY_MAX);
+            Notification card = notificationBuilder.build();
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
+                    .notify(FORGOT_PHONE_NOTIFICATION_ID, card);
+        }
     }
 
     @Override
     public void onPeerConnected(com.google.android.gms.wearable.Node peer) {
         Log.d(TAG, "onPeerConnected()");
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-                .cancel(FORGOT_PHONE_NOTIFICATION_ID);
+        if (Marvin_Watchface_Service.getmEngine().mCheckBT == 1) {
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
+                    .cancel(FORGOT_PHONE_NOTIFICATION_ID);
+        }
     }
 
 }
