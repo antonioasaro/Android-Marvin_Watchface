@@ -154,6 +154,7 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
         float mBatteryLevel;
         Intent batteryStatus;
         Paint mBatteryPaint;
+        int mCheckBT;
 
         Date mDate;
         SimpleDateFormat mDayOfWeekFormat;
@@ -279,6 +280,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             mTimePaint.setTypeface(NORMAL_TYPEFACE);
             mTimePaint.setAntiAlias(true);
             mTimePaint.setColor(ContextCompat.getColor(getApplicationContext(), R.color.digital_time));
+
+            mCheckBT = 0;
         }
 
         private void initFormats() {
@@ -647,6 +650,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             }
             addIntKeyIfMissing(config, Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR,
                     Marvin_Watchface_Utility.COLOR_VALUE_DEFAULT_AND_AMBIENT_BACKGROUND);
+            addIntKeyIfMissing(config, Marvin_Watchface_Utility.KEY_CHECK_BT,
+                    0);
         }
 
         private void addIntKeyIfMissing(DataMap config, String key, int color) {
@@ -714,8 +719,13 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
             if (configKey.equals(Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR)) {
                 setInteractiveBackgroundColor(color);
             } else {
-                Log.w(TAG, "Ignoring unknown config key: " + configKey);
-                return false;
+                if (configKey.equals(Marvin_Watchface_Utility.KEY_CHECK_BT)) {
+                    Log.w(TAG, "Inspect checkBT: " + configKey + " " + color);
+                    mCheckBT = color;
+                } else {
+                    Log.w(TAG, "Ignoring unknown config key: " + configKey);
+                    return false;
+                }
             }
             return true;
         }

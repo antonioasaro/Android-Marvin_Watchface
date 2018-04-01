@@ -38,6 +38,7 @@ public final class Marvin_Watchface_Utility {
      * The color name must be a {@link String} recognized by {@link Color#parseColor}.
      */
     public static final String KEY_BACKGROUND_COLOR = "BACKGROUND_COLOR";
+    public static final String KEY_CHECK_BT = "CHECK_BT";
 
     /**
      * The path for the {@link DataItem} containing {@link Marvin_Watchface_Service} configuration.

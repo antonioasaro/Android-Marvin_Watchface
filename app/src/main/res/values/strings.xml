@@ -2,7 +2,8 @@
     <string name="app_name">Marvin Watchface</string>
     <string name="message">Watch face tapped</string>
     <string name="my_digital_name">Marvin Watchface</string>
-    <string name="select_title">Select bgcolor</string>
+    <string name="select_title"><u>Select bgclr</u></string>
+    <string name="checkbox_BT">Check BT conn</string>
 
     <!-- TODO: this should be shared (needs covering all the samples with Gradle build model) -->
     <string name="color_black">black</string>

@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ public class Marvin_Watchface_Configuration extends Activity implements
 
     private GoogleApiClient mGoogleApiClient;
     private TextView mHeader;
+    private int mCheckBT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class Marvin_Watchface_Configuration extends Activity implements
         setContentView(R.layout.activity_config);
 
         mHeader = (TextView) findViewById(R.id.header);
+        mCheckBT = 0;
         WearableListView listView = (WearableListView) findViewById(R.id.color_picker);
         BoxInsetLayout content = (BoxInsetLayout) findViewById(R.id.content);
         // BoxInsetLayout adds padding by default on round devices. Add some on square devices.
@@ -125,7 +128,7 @@ public class Marvin_Watchface_Configuration extends Activity implements
     @Override // WearableListView.ClickListener
     public void onClick(WearableListView.ViewHolder viewHolder) {
         ColorItemViewHolder colorItemViewHolder = (ColorItemViewHolder) viewHolder;
-        updateConfigDataItem(colorItemViewHolder.mColorItem.getColor());
+        updateConfigDataItem(colorItemViewHolder.mColorItem.getColor(), mCheckBT);
         finish();
     }
 
@@ -147,10 +150,12 @@ public class Marvin_Watchface_Configuration extends Activity implements
     @Override // WearableListView.OnScrollListener
     public void onCentralPositionChanged(int centralPosition) {}
 
-    private void updateConfigDataItem(final int backgroundColor) {
+    private void updateConfigDataItem(final int backgroundColor, final int checkBT) {
         DataMap configKeysToOverwrite = new DataMap();
         configKeysToOverwrite.putInt(Marvin_Watchface_Utility.KEY_BACKGROUND_COLOR,
                 backgroundColor);
+        configKeysToOverwrite.putInt(Marvin_Watchface_Utility.KEY_CHECK_BT,
+                checkBT);
         Marvin_Watchface_Utility.overwriteKeysInConfigDataMap(mGoogleApiClient, configKeysToOverwrite);
     }
 
@@ -293,5 +298,11 @@ public class Marvin_Watchface_Configuration extends Activity implements
             super(colorItem);
             mColorItem = colorItem;
         }
+    }
+
+    public void onCheckboxClicked(View view) {
+        Log.d(TAG, "Clicked checkbox");
+        boolean checked = ((CheckBox) view).isChecked();
+        if (checked) { mCheckBT = 1; } else { mCheckBT = 0; }
     }
 }
