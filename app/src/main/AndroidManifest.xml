@@ -57,11 +57,21 @@
                 <action android:name=
                     "com.antonio_asaro.android.wearable.watchface.CONFIG_DIGITAL" />
                 <category android:name=
+                   "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
+<!--                <category android:name="android.intent.category.DEFAULT" />  -->
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Marvin_Watchface_ListView"
+            android:label="Marvin_Watchface_ListView">
+            <intent-filter>
+                <action android:name=
+                    "com.antonio_asaro.android.wearable.watchface.CONFIG_DIGITAL" />
+                <category android:name=
                     "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
 
         <service android:name=".Marvin_Watchface_Listener">
             <intent-filter>
