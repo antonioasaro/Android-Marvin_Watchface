@@ -23,6 +23,7 @@ import java.util.List;
 public class Marvin_Watchface_ListView extends ListActivity implements
         WearableListView.ClickListener {
     private static final String TAG = "Marvin_Watchface_List";
+    AppAdapter appadapter=null;
 
 
     @Override
@@ -39,22 +40,20 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         for (ResolveInfo l : launchables) {
             Log.d(TAG, "Launchable: " + l.toString());
         }
-        String[] abc = {"abcabc", "defdef", "ijkijk", "nopnop", "pqrpqr", "rstrst"};
+        String[] abc = {"Select bclr", "defdef", "ijkijk", "nopnop", "pqrpqr", "rstrst"};
         int ijk = R.drawable.launcher_icon;
-        Integer[] def = {ijk, ijk, ijk, ijk, ijk, ijk};
+        int nop = R.drawable.earth;
+        int rst = R.drawable.connect;
+        Integer[] def = {ijk, nop, nop, rst, nop, nop};
 
         CustomListAdapter adapter = new CustomListAdapter(this, abc, def);
         ListView lv = getListView();
         lv.setAdapter(adapter);
-
-////        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_row, R.id.label, abc));
-////        this.setListAdapter(new ArrayAdapter<ImageView>(this, R.layout.list_row, R.id.icon, def));
-
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemClick: " + i);
-                if (i==3) startConfig();
+                if (i == 0) startConfig();
             }
         });
     }
@@ -98,8 +97,6 @@ class CustomListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.list_row, null,true);
 
-        Log.d(TAG, String.valueOf(position));
-        Log.d(TAG, itemname[position]);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
 
