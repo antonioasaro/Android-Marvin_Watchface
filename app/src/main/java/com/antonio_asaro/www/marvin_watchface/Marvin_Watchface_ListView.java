@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
 import android.util.Log;
@@ -23,7 +24,6 @@ import java.util.List;
 public class Marvin_Watchface_ListView extends ListActivity implements
         WearableListView.ClickListener {
     private static final String TAG = "Marvin_Watchface_List";
-    AppAdapter appadapter=null;
 
 
     @Override
@@ -37,14 +37,17 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         List<ResolveInfo> launchables = pm.queryIntentActivities(main, 0);
         Collections.sort(launchables, new ResolveInfo.DisplayNameComparator(pm));
 
+        String[] abc = {"Select bclr", "defdef", "ijkijk", "nopnop"};
+        Drawable ijk = getDrawable(R.drawable.launcher_icon);
+        Drawable[] def = {ijk, ijk, ijk, ijk};
+
+        int nop = 1;
         for (ResolveInfo l : launchables) {
-            Log.d(TAG, "Launchable: " + l.toString());
+////            Log.d(TAG, "Launchable: " + l.toString());
+            abc[nop] = l.loadLabel(pm).toString();
+            def[nop] = l.loadIcon(pm);
+            if (nop < 3) nop++;
         }
-        String[] abc = {"Select bclr", "defdef", "ijkijk", "nopnop", "pqrpqr", "rstrst"};
-        int ijk = R.drawable.launcher_icon;
-        int nop = R.drawable.earth;
-        int rst = R.drawable.connect;
-        Integer[] def = {ijk, nop, nop, rst, nop, nop};
 
         CustomListAdapter adapter = new CustomListAdapter(this, abc, def);
         ListView lv = getListView();
@@ -81,16 +84,16 @@ class CustomListAdapter extends ArrayAdapter<String> {
 
     private final Activity context;
     private final String[] itemname;
-    private final Integer[] imgid;
+    private final Drawable[] drawname;
     private static final String TAG = "Marvin_Watchface_Adapter";
 
-    public CustomListAdapter(Activity context, String[] itemname, Integer[] imgid) {
+    public CustomListAdapter(Activity context, String[] itemname, Drawable[] drawname) {
         super(context, R.layout.list_main, itemname);
         // TODO Auto-generated constructor stub
 
         this.context=context;
         this.itemname=itemname;
-        this.imgid=imgid;
+        this.drawname=drawname;
     }
 
     public View getView(int position,View view,ViewGroup parent) {
@@ -100,7 +103,7 @@ class CustomListAdapter extends ArrayAdapter<String> {
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
 
-        imageView.setImageResource(imgid[position]);
+        imageView.setImageDrawable(drawname[position]);
         txtTitle.setText(itemname[position]);
         return rowView;
 
