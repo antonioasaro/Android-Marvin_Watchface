@@ -2,7 +2,9 @@ package com.antonio_asaro.www.marvin_watchface;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,26 +40,40 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         List<ResolveInfo> launchables = pm.queryIntentActivities(main, 0);
         Collections.sort(launchables, new ResolveInfo.DisplayNameComparator(pm));
 
-        String[] abc = {"Select bclr", "defdef", "ijkijk", "nopnop"};
+        List<String> abc = new ArrayList<String>();
+        abc.add("bclr"); // abc.add("defdef"); abc.add("ijkijk"); abc.add("nopnop"); abc.add("rstrst"); abc.add("xyzxyz");
         Drawable ijk = getDrawable(R.drawable.launcher_icon);
-        Drawable[] def = {ijk, ijk, ijk, ijk};
+        List<Drawable> def = new ArrayList<Drawable>();
+        def.add(ijk); // def.add(ijk); def.add(ijk); def.add(ijk); def.add(ijk); def.add(ijk);
 
-        int nop = 1;
+//        int nop = 1;
         for (ResolveInfo l : launchables) {
 ////            Log.d(TAG, "Launchable: " + l.toString());
-            abc[nop] = l.loadLabel(pm).toString();
-            def[nop] = l.loadIcon(pm);
-            if (nop < 3) nop++;
+            abc.add(l.loadLabel(pm).toString());
+            def.add(l.loadIcon(pm));
+//            if (nop < 5) nop++;
         }
 
-        CustomListAdapter adapter = new CustomListAdapter(this, abc, def);
+        final CustomListAdapter adapter = new CustomListAdapter(this, launchables, abc, def);
         ListView lv = getListView();
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemClick: " + i);
-                if (i == 0) startConfig();
+                if (i == 0) {
+                    startConfig();
+                } else {
+                    ResolveInfo k = adapter.getApp(i);
+                    ActivityInfo activity=k.activityInfo;
+                    ComponentName name=new ComponentName(activity.applicationInfo.packageName, activity.name);
+                    Intent intent=new Intent(Intent.ACTION_MAIN);
+
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    intent.setComponent(name);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -83,17 +100,19 @@ public class Marvin_Watchface_ListView extends ListActivity implements
 class CustomListAdapter extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final String[] itemname;
-    private final Drawable[] drawname;
+    private final List<String> itemname;
+    private final List<Drawable> drawname;
+    private final List<ResolveInfo> apps;
     private static final String TAG = "Marvin_Watchface_Adapter";
 
-    public CustomListAdapter(Activity context, String[] itemname, Drawable[] drawname) {
+    public CustomListAdapter(Activity context, List<ResolveInfo> apps, List<String> itemname, List<Drawable> drawname) {
         super(context, R.layout.list_main, itemname);
         // TODO Auto-generated constructor stub
 
         this.context=context;
         this.itemname=itemname;
         this.drawname=drawname;
+        this.apps = apps;
     }
 
     public View getView(int position,View view,ViewGroup parent) {
@@ -102,10 +121,13 @@ class CustomListAdapter extends ArrayAdapter<String> {
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
-
-        imageView.setImageDrawable(drawname[position]);
-        txtTitle.setText(itemname[position]);
+        imageView.setImageDrawable(drawname.get(position));
+        txtTitle.setText(itemname.get(position));
         return rowView;
 
     };
+
+    public ResolveInfo getApp(int i) {
+        return apps.get(i-1);
+    }
 }
