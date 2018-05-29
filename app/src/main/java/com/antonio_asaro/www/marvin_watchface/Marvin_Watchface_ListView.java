@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
@@ -27,6 +29,7 @@ import java.util.List;
 public class Marvin_Watchface_ListView extends ListActivity implements
         WearableListView.ClickListener {
     private static final String TAG = "Marvin_Watchface_List";
+    private int apps_length;
 
 
     @Override
@@ -40,21 +43,22 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         List<ResolveInfo> launchables = pm.queryIntentActivities(main, 0);
         Collections.sort(launchables, new ResolveInfo.DisplayNameComparator(pm));
 
-        List<String> abc = new ArrayList<String>();
-        abc.add("bclr"); // abc.add("defdef"); abc.add("ijkijk"); abc.add("nopnop"); abc.add("rstrst"); abc.add("xyzxyz");
-        Drawable ijk = getDrawable(R.drawable.launcher_icon);
-        List<Drawable> def = new ArrayList<Drawable>();
-        def.add(ijk); // def.add(ijk); def.add(ijk); def.add(ijk); def.add(ijk); def.add(ijk);
+        List<String> appname = new ArrayList<String>();
+        appname.add("Set bgclr");
+        List<Drawable> appimg = new ArrayList<Drawable>();
+        appimg.add(getDrawable(R.drawable.set_bgclk));
 
-//        int nop = 1;
         for (ResolveInfo l : launchables) {
 ////            Log.d(TAG, "Launchable: " + l.toString());
-            abc.add(l.loadLabel(pm).toString());
-            def.add(l.loadIcon(pm));
-//            if (nop < 5) nop++;
+            appname.add(l.loadLabel(pm).toString());
+            appimg.add(scaleImage(l.loadIcon(pm)));
         }
+        appname.add("");
+        appimg.add(getDrawable(R.drawable.blank));
+        apps_length = appname.size();
+        Log.d(TAG, "appslenght: " + apps_length);
 
-        final CustomListAdapter adapter = new CustomListAdapter(this, launchables, abc, def);
+        final CustomListAdapter adapter = new CustomListAdapter(this, launchables, appname, appimg);
         ListView lv = getListView();
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -63,14 +67,16 @@ public class Marvin_Watchface_ListView extends ListActivity implements
                 Log.d(TAG, "onItemClick: " + i);
                 if (i == 0) {
                     startConfig();
+                } else if (i == (apps_length-1)) {
+                    return;
                 } else {
                     ResolveInfo k = adapter.getApp(i);
-                    ActivityInfo activity=k.activityInfo;
-                    ComponentName name=new ComponentName(activity.applicationInfo.packageName, activity.name);
-                    Intent intent=new Intent(Intent.ACTION_MAIN);
+                    ActivityInfo activity = k.activityInfo;
+                    ComponentName name = new ComponentName(activity.applicationInfo.packageName, activity.name);
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
 
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.setComponent(name);
                     startActivity(intent);
                 }
@@ -95,6 +101,16 @@ public class Marvin_Watchface_ListView extends ListActivity implements
     public void onTopEmptyRegionClick() {
         Log.d(TAG, "onTopEmptyRegionClick");
     }
+
+    public Drawable scaleImage (Drawable image) {
+        if ((image == null) || !(image instanceof BitmapDrawable)) { return image; }
+
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 96, 96, false);
+        image = new BitmapDrawable(getResources(), bitmapResized);
+        return image;
+    }
+
 }
 
 class CustomListAdapter extends ArrayAdapter<String> {
@@ -119,12 +135,14 @@ class CustomListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.list_row, null,true);
 
+
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
+        if (position==0) { imageView.setPadding(72,0,48,0); }
+
         imageView.setImageDrawable(drawname.get(position));
         txtTitle.setText(itemname.get(position));
         return rowView;
-
     };
 
     public ResolveInfo getApp(int i) {

@@ -17,9 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/icon"
+        android:layout_gravity="center_vertical"
         android:textSize="18sp"
-        android:textColor="@color/black"
-        android:paddingTop="2px"
+        android:textColor="@color/text_selector"
+        android:paddingTop="16px"
         android:paddingBottom="2px"
         />
 </RelativeLayout>
