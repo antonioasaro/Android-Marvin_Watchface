@@ -51,7 +51,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".Marvin_Watchface_Configuration"
+            android:name=".Marvin_Watchface_Config"
             android:label="Marvin_Watchface Configuration">
             <intent-filter>
                 <action android:name=

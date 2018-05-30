@@ -399,12 +399,12 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
                     // TODO: Add code to handle the tap gesture.
-                    Log.d(TAG, "OnTapCommand()");
-                    Intent startMain = new Intent(Intent.ACTION_MAIN);
-                    startMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    if (startMain.resolveActivity(getPackageManager()) != null) {
-                        startActivity(startMain);
-                    }
+////                    Log.d(TAG, "OnTapCommand()");
+////                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+////                    startMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+////                    if (startMain.resolveActivity(getPackageManager()) != null) {
+////                        startActivity(startMain);
+////                    }
                     break;
             }
             invalidate();

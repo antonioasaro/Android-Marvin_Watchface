@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -44,33 +46,57 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         Collections.sort(launchables, new ResolveInfo.DisplayNameComparator(pm));
 
         List<String> appname = new ArrayList<String>();
-        appname.add("Set bgclr");
         List<Drawable> appimg = new ArrayList<Drawable>();
-        appimg.add(getDrawable(R.drawable.set_bgclk));
 
+        appname.add("");
+        appimg.add(getDrawable(R.drawable.blank));
+        appname.add("Set bgclr");
+        appimg.add(getDrawable(R.drawable.set_bgclk));
         for (ResolveInfo l : launchables) {
-////            Log.d(TAG, "Launchable: " + l.toString());
             appname.add(l.loadLabel(pm).toString());
             appimg.add(scaleImage(l.loadIcon(pm)));
         }
         appname.add("");
         appimg.add(getDrawable(R.drawable.blank));
         apps_length = appname.size();
+        appname.add("");
+        appimg.add(getDrawable(R.drawable.blank));
+        apps_length = appname.size();
         Log.d(TAG, "appslenght: " + apps_length);
 
         final CustomListAdapter adapter = new CustomListAdapter(this, launchables, appname, appimg);
-        ListView lv = getListView();
+        final ListView lv = getListView();
         lv.setAdapter(adapter);
+        lv.setItemsCanFocus(true);
+        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                if (i == SCROLL_STATE_IDLE) {
+                    int middle = ((lv.getLastVisiblePosition()-lv.getFirstVisiblePosition())/2) + lv.getFirstVisiblePosition();
+                    adapter.setMiddle(middle);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+            }
+        });
+////        lv.setOnScrollChangeListener(new View.OnScrollChangeListener(){
+////            @Override
+////            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+////            }
+////        });
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemClick: " + i);
-                if (i == 0) {
-                    startConfig();
-                } else if (i == (apps_length-1)) {
+                if ((i == 0) || (i == (apps_length - 2)) || (i == (apps_length - 1))) {
                     return;
+                } else if (i == 1) {
+                    startConfig();
                 } else {
-                    ResolveInfo k = adapter.getApp(i);
+                    ResolveInfo k = adapter.getApp(i - 1);
                     ActivityInfo activity = k.activityInfo;
                     ComponentName name = new ComponentName(activity.applicationInfo.packageName, activity.name);
                     Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -79,27 +105,26 @@ public class Marvin_Watchface_ListView extends ListActivity implements
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.setComponent(name);
                     startActivity(intent);
+                    finish();
                 }
             }
         });
     }
 
     void startConfig() {
-        Log.d(TAG, "startConfig");
-        Intent marvinWatchConfig = new Intent(this, Marvin_Watchface_Configuration.class);
-        marvinWatchConfig.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent marvinWatchConfig = new Intent(this, Marvin_Watchface_Config.class);
+        marvinWatchConfig.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(marvinWatchConfig);
+        finish();
     }
 
     @Override
     public void onClick(WearableListView.ViewHolder view) {
-        Log.d(TAG, "onClick");
         finish();
     }
 
     @Override
     public void onTopEmptyRegionClick() {
-        Log.d(TAG, "onTopEmptyRegionClick");
     }
 
     public Drawable scaleImage (Drawable image) {
@@ -119,6 +144,7 @@ class CustomListAdapter extends ArrayAdapter<String> {
     private final List<String> itemname;
     private final List<Drawable> drawname;
     private final List<ResolveInfo> apps;
+    private int middle = 1;
     private static final String TAG = "Marvin_Watchface_Adapter";
 
     public CustomListAdapter(Activity context, List<ResolveInfo> apps, List<String> itemname, List<Drawable> drawname) {
@@ -131,6 +157,7 @@ class CustomListAdapter extends ArrayAdapter<String> {
         this.apps = apps;
     }
 
+    @Override
     public View getView(int position,View view,ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.list_row, null,true);
@@ -138,12 +165,21 @@ class CustomListAdapter extends ArrayAdapter<String> {
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.text);
-        if (position==0) { imageView.setPadding(72,0,48,0); }
+        if (position==1) { imageView.setPadding(74,0,48,0); }
 
         imageView.setImageDrawable(drawname.get(position));
         txtTitle.setText(itemname.get(position));
+        if (position == middle) {
+            txtTitle.setTextColor(Color.BLACK);
+        } else {
+            txtTitle.setTextColor(Color.GRAY);
+        }
         return rowView;
     };
+
+    public void setMiddle(int i) {
+        middle = i;
+    }
 
     public ResolveInfo getApp(int i) {
         return apps.get(i-1);

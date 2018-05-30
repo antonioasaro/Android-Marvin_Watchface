@@ -41,10 +41,10 @@ import com.google.android.gms.wearable.Wearable;
 
 
 /**
- * The watch-side config activity for {@link Marvin_Watchface_Configuration}, which allows for setting the
+ * The watch-side config activity for {@link Marvin_Watchface_Config}, which allows for setting the
  * background color.
  */
-public class Marvin_Watchface_Configuration extends Activity implements
+public class Marvin_Watchface_Config extends Activity implements
         WearableListView.ClickListener, WearableListView.OnScrollListener {
     private static final String TAG = "Marvin_Watchface_Conf";
 
