@@ -6,8 +6,8 @@ android {
         applicationId "com.antonio_asaro.www.marvin_watchface"
         minSdkVersion 25
         targetSdkVersion 26
-        versionCode 108
-        versionName '1.08'
+        versionCode 109
+        versionName '1.09'
         multiDexEnabled true
     }
     buildTypes {

@@ -51,7 +51,7 @@ public class Marvin_Watchface_ListView extends ListActivity implements
         appname.add("");
         appimg.add(getDrawable(R.drawable.blank));
         appname.add("Set bgclr");
-        appimg.add(getDrawable(R.drawable.set_bgclk));
+        appimg.add(getDrawable(R.drawable.set_bgclr));
         for (ResolveInfo l : launchables) {
             appname.add(l.loadLabel(pm).toString());
             appimg.add(scaleImage(l.loadIcon(pm)));
