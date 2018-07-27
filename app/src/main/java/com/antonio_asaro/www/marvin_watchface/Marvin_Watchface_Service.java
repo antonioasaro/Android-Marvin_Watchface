@@ -436,8 +436,8 @@ public class Marvin_Watchface_Service extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
                 Paint shading = new Paint();
                 for (int i=0; i<bounds.height()/4; i++) {
-                    shading.setARGB(0x48, 3*i/2, 3*i/2, 3*i/2);;
-                    canvas.drawRect(0, 4*i, bounds.width(), 4*i+4, shading);
+                    shading.setARGB(60, 3 * i / 2, 3 * i / 2, 3 * i / 2);
+                    canvas.drawRect(0, 4 * i, bounds.width(), 4 * i + 4, shading);
                 }
                 canvas.drawBitmap(mSpaceBitmap, 32, 36, null);
                 canvas.drawBitmap(mMarsBitmap, 40, 332, null);
