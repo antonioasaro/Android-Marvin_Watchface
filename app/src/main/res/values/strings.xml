@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Marvin Watchface</string>
+    <string name="app_name">Marvin Digital</string>
     <string name="message">Watch face tapped</string>
-    <string name="my_digital_name">Marvin Watchface</string>
+    <string name="my_digital_name">Marvin Digital</string>
     <string name="checkbox_BT">Check BT conn</string>
     <string name="activity_title"><u>Select activity</u></string>
     <string name="color_title"><u>Select bgclr</u></string>
