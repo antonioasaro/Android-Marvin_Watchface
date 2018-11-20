@@ -52,8 +52,8 @@ public class Marvin_Watchface_Listener extends WearableListenerService {
 
     @Override
     public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {
-        if (Marvin_Watchface_Service.getmEngine().mCheckBT == 1) {
         Log.d(TAG, "onPeerDisconnected()");
+        if ((Marvin_Watchface_Service.getmEngine() != null) && (Marvin_Watchface_Service.getmEngine().mCheckBT == 1)) {
             Notification.Builder notificationBuilder = new Notification.Builder(this)
                     .setContentTitle("Bluetooth disconnected")
                     .setContentText("out of range?")
